@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.urls import path, include
 from calculator.views import *
 """recipes URL Configuration
 
@@ -22,8 +21,8 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),
-    path('omlet/', omlet_view, name='omlet'),
-    path('pasta/', pasta_view, name='pasta'),
-    path('buter/', buter_view, name='buter'),
+    path('omlet/', recipe, name='omlet'),
+    path('pasta/', recipe, name='pasta'),
+    path('buter/', recipe, name='buter'),
 
 ]
