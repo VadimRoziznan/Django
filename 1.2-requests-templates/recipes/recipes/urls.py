@@ -1,3 +1,6 @@
+from django.contrib import admin
+from django.urls import path, include
+from calculator.views import *
 """recipes URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -17,5 +20,10 @@ Including another URLconf
 from django.urls import path
 
 urlpatterns = [
-    # здесь зарегистрируйте вашу view-функцию
+    path('admin/', admin.site.urls),
+    path('', home_view, name='home'),
+    path('omlet/', omlet_view, name='omlet'),
+    path('pasta/', pasta_view, name='pasta'),
+    path('buter/', buter_view, name='buter'),
+
 ]
