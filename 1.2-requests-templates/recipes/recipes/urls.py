@@ -21,8 +21,8 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_view, name='home'),
-    path('omlet/', recipe, name='omlet'),
-    path('pasta/', recipe, name='pasta'),
-    path('buter/', recipe, name='buter'),
+    path('omlet/', recipe_view, name='omlet'),
+    path('pasta/', recipe_view, name='pasta'),
+    path('buter/', recipe_view, name='buter'),
 
 ]
