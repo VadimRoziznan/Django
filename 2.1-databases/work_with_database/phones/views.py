@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from phones.models import Phone
+import re
 
 def index(request):
     return redirect('catalog')
@@ -20,6 +22,10 @@ def show_catalog(request):
 
 
 def show_product(request, slug):
+    pattern = r"(/catalog/)|(/)"
+    t = request.path
+    path1 = re.match(pattern, t)
+    print(path1)
     template = 'product.html'
     context = {}
     return render(request, template, context)
