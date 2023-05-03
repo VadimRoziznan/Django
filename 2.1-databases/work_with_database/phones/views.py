@@ -22,10 +22,16 @@ def show_catalog(request):
 
 
 def show_product(request, slug):
-    pattern = r"(/catalog/)|(/)"
-    t = request.path
-    path1 = re.match(pattern, t)
-    print(path1)
+    phone_name = request.path.split('/')[-2]
     template = 'product.html'
-    context = {}
+    phone_objects = Phone.objects.filter(slug=phone_name)
+    phone = [
+        {
+            'name': phone.name, 'price': phone.price, 'image': phone.image,
+            'release_date': phone.release_date, 'lte_exists': phone.lte_exists,
+            'slug': phone.slug
+        } for phone in phone_objects
+    ][0]
+    print('phone', phone)
+    context = {'phone': phone}
     return render(request, template, context)

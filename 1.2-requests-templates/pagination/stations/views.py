@@ -18,7 +18,7 @@ def bus_stations(request):
                 {"Name": el["Name"], "Street": el["Street"], "District": el["District"]}
             )
     page_number = int(request.GET.get("page", 1))
-    paginator = Paginator(CONTENT, 10)
+    paginator = Paginator(CONTENT, 2)
     page = paginator.get_page(page_number)
     context = {"bus_stations": page, "page": page}
     return render(request, "stations/index.html", context)
