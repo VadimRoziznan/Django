@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from phones.models import Phone
-import re
+
 
 def index(request):
     return redirect('catalog')
 
 
 def show_catalog(request):
+
     phone_objects = Phone.objects.all()
     phones = [
         {
@@ -16,15 +16,17 @@ def show_catalog(request):
             'slug': phone.slug
         } for phone in phone_objects
     ]
+    options_name = request.GET.get('sort')
+    if options_name:
+        phones = options(options_name, phones)
     template = 'catalog.html'
     context = {'phones': phones}
     return render(request, template, context)
 
 
 def show_product(request, slug):
-    phone_name = request.path.split('/')[-2]
     template = 'product.html'
-    phone_objects = Phone.objects.filter(slug=phone_name)
+    phone_objects = Phone.objects.filter(slug=slug)
     phone = [
         {
             'name': phone.name, 'price': phone.price, 'image': phone.image,
@@ -32,6 +34,15 @@ def show_product(request, slug):
             'slug': phone.slug
         } for phone in phone_objects
     ][0]
-    print('phone', phone)
     context = {'phone': phone}
     return render(request, template, context)
+
+
+def options(parameter, data):
+    if parameter == 'name':
+        data.sort(key=lambda key: key['name'])
+    elif parameter == 'max_price':
+        data.sort(key=lambda key: key['price'], reverse=True)
+    elif parameter == 'min_price':
+        data.sort(key=lambda key: key['price'])
+    return data
