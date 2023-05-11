@@ -1,6 +1,4 @@
-import uuid
 from django.db import models
-from slugify import slugify
 
 
 class Phone(models.Model):

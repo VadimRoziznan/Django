@@ -25,6 +25,4 @@ urlpatterns = [
     path('books/skotnyi-dvor/', book_view, name='skotnyi-dvor'),
     path('books/v-pamiat-o-proshlom-zemli/', book_view, name='v-pamiat-o-proshlom-zemli'),
     path('admin/', admin.site.urls),
-    # path('books/book/', book_view),
-
 ]
