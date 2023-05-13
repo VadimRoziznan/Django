@@ -4,13 +4,11 @@ from django.forms import BaseInlineFormSet
 from .models import Article, Scope
 
 
-
 class ScopeInlineFormset(BaseInlineFormSet):
     def clean(self):
         tag_name = []
         is_main_count = 0
         for form in self.forms:
-            form.cleaned_data
             if form.cleaned_data.get('tag') in tag_name and form.cleaned_data.get('tag') is not None:
                 raise ValidationError('Имена тегов не должны повторяться.')
             else:
