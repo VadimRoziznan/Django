@@ -1,7 +1,5 @@
 from django.db import models
 
-# TODO: опишите модели датчика (Sensor) и измерения (Measurement)
-
 
 class Sensor(models.Model):
 
@@ -21,7 +19,9 @@ class Sensor(models.Model):
 
 class Measurement(models.Model):
 
-    id_sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, related_name='measurements')
+    id_sensor = models.ForeignKey(
+        Sensor, on_delete=models.CASCADE, related_name='measurements'
+    )
     temperature = models.DecimalField(
         max_digits=4, decimal_places=1
     )
@@ -37,6 +37,3 @@ class Measurement(models.Model):
         verbose_name = 'Измерение температуры'
         verbose_name_plural = 'Измерение температуры'
         ordering = ['temperature']
-
-
-
