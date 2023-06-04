@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
-from logistic.models import Product, Stock
+from logistic.models import Product, Stock, StockProduct
 from logistic.serializers import ProductSerializer, StockSerializer
 
 
@@ -15,7 +15,6 @@ class ProductViewSet(ModelViewSet):
     ]
     search_fields = ['title',]
     pagination_class = LimitOffsetPagination
-    # при необходимости добавьте параметры фильтрации
 
 
 class StockViewSet(ModelViewSet):
@@ -25,9 +24,30 @@ class StockViewSet(ModelViewSet):
         DjangoFilterBackend, SearchFilter, OrderingFilter
     ]
     filterset_fields = ['products', ]
-    # search_fields = ['address', ]
-    # pagination_class = LimitOffsetPagination
+    pagination_class = LimitOffsetPagination
 
+    def list(self, request, *args, **kwargs):
+        context = []
+        product_id = request.GET.get('products')
+        stocks = Stock.objects.raw(
+            '''
+            SELECT 
+                ls.id, address 
+            FROM 
+                logistic_stock ls 
+            FULL JOIN 
+                logistic_stockproduct ls2 
+            ON 
+                ls2.stock_id = ls.id 
+            WHERE 
+                product_id = %s;
+            ''', [product_id])
 
-
-    # при необходимости добавьте параметры фильтрации
+        for stock in stocks:
+            context.append(
+                {
+                    'id': stock.id,
+                    'address': stock.address
+                }
+            )
+        return Response(context)

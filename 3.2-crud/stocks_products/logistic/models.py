@@ -7,7 +7,9 @@ class Product(models.Model):
     description = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f'id: {self.id}, title: {self.title}, description: {self.description}'
+        return f'id: {self.pk}, ' \
+               f'title: {self.title}, ' \
+               f'description: {self.description}'
 
 
 class Stock(models.Model):
@@ -19,9 +21,13 @@ class Stock(models.Model):
     )
 
     def __str__(self):
-        return f'address: {self.address}, products: {self.products}'
+        return f'id: {self.pk}, ' \
+               f'address: {self.address}, ' \
+               f'products: {self.products}'
+
 
 class StockProduct(models.Model):
+
     stock = models.ForeignKey(
         Stock,
         on_delete=models.CASCADE,
