@@ -80,29 +80,42 @@ class StockSerializer(serializers.ModelSerializer):
         positions = validated_data.pop('positions')
         stock = super().update(instance, validated_data)
 
+        '''Вариант специалиста'''
         for position in positions:
-            stock_id = instance.id
             product_id = position.pop('product').id
             price = position.pop('price')
             quantity = position.pop('quantity')
-
-            product = Product.objects.filter(id=product_id)
-            stock_product = StockProduct.objects.filter(
-                stock_id=stock_id,
-                product_id=product_id
-            )
-
-            if product and not stock_product:
-                create_product_in_stock = StockProduct.objects.create(
-                    stock_id=stock.id,
-                    product_id=product_id,
-                    price=price,
-                    quantity=quantity
-                )
-                create_product_in_stock.save()
-            else:
-                stock_product.update(
-                    price=price,
-                    quantity=quantity
-                )
+            StockProduct.objects.update_or_create(
+                stock_id=stock.id,
+                product_id=product_id,
+                defaults={'price': price, 'quantity': quantity})
         return stock
+
+
+        '''Мой вариант'''
+        # for position in positions:
+        #     stock_id = instance.id
+        #     product_id = position.pop('product').id
+        #     price = position.pop('price')
+        #     quantity = position.pop('quantity')
+        #
+        #     product = Product.objects.filter(id=product_id)
+        #     stock_product = StockProduct.objects.filter(
+        #         stock_id=stock_id,
+        #         product_id=product_id
+        #     )
+        #
+        #     if product and not stock_product:
+        #         create_product_in_stock = StockProduct.objects.create(
+        #             stock_id=stock.id,
+        #             product_id=product_id,
+        #             price=price,
+        #             quantity=quantity
+        #         )
+        #         create_product_in_stock.save()
+        #     else:
+        #         stock_product.update(
+        #             price=price,
+        #             quantity=quantity
+        #         )
+        # return stock

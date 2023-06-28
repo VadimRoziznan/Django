@@ -23,31 +23,31 @@ class StockViewSet(ModelViewSet):
     filter_backends = [
         DjangoFilterBackend, SearchFilter, OrderingFilter
     ]
-    filterset_fields = ['products', ]
+    filterset_fields = ['products']
     pagination_class = LimitOffsetPagination
 
-    def list(self, request, *args, **kwargs):
-        context = []
-        product_id = request.GET.get('products')
-        stocks = Stock.objects.raw(
-            '''
-            SELECT 
-                ls.id, address 
-            FROM 
-                logistic_stock ls 
-            FULL JOIN 
-                logistic_stockproduct ls2 
-            ON 
-                ls2.stock_id = ls.id 
-            WHERE 
-                product_id = %s;
-            ''', [product_id])
-
-        for stock in stocks:
-            context.append(
-                {
-                    'id': stock.id,
-                    'address': stock.address
-                }
-            )
-        return Response(context)
+    # def list(self, request, *args, **kwargs):
+    #     context = []
+    #     product_id = request.GET.get('products')
+    #     stocks = Stock.objects.raw(
+    #         '''
+    #         SELECT
+    #             ls.id, address
+    #         FROM
+    #             logistic_stock ls
+    #         FULL JOIN
+    #             logistic_stockproduct ls2
+    #         ON
+    #             ls2.stock_id = ls.id
+    #         WHERE
+    #             product_id = %s;
+    #         ''', [product_id])
+    #
+    #     for stock in stocks:
+    #         context.append(
+    #             {
+    #                 'id': stock.id,
+    #                 'address': stock.address
+    #             }
+    #         )
+    #     return Response(context)
