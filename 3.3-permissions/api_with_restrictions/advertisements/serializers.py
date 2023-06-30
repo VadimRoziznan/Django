@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from advertisements.models import Advertisement
 
@@ -22,8 +23,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', )
+        fields = '__all__'
 
     def create(self, validated_data):
         """Метод для создания"""
@@ -39,7 +39,15 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
-
+        try:
+            user = self.context["request"].user
+            count_open_advertisement = len(Advertisement.objects.filter(creator_id=user, status='OPEN').values())
+            if count_open_advertisement >= 10:
+                raise ValidationError(
+                    'Превышен лимит открытых объявлений, закройте объявление и повторите попытку.  '
+                )
+        except FileNotFoundError as error:
+            print(error)
         # TODO: добавьте требуемую валидацию
 
         return data
