@@ -3,12 +3,14 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.throttling import AnonRateThrottle
+from rest_framework.filters import SearchFilter, OrderingFilter
+
 from advertisements.models import Advertisement
 from advertisements.serializers import AdvertisementSerializer
 from advertisements.permissions import IsOwnerOrheadOnly
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter, OrderingFilter
 from advertisements.filters import AdvertisementFilter
+
+from django_filters.rest_framework import DjangoFilterBackend
 
 
 class AdvertisementViewSet(ModelViewSet, ListAPIView):
@@ -21,10 +23,7 @@ class AdvertisementViewSet(ModelViewSet, ListAPIView):
         DjangoFilterBackend, SearchFilter, OrderingFilter
     ]
     filterset_class = AdvertisementFilter
-    # filterset_fields = ['creator_id']
     pagination_class = LimitOffsetPagination
-    # TODO: настройте ViewSet, укажите атрибуты для кверисета,
-    #   сериализаторов и фильтров
 
     def get_permissions(self):
         """Получение прав для действий."""

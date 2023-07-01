@@ -27,7 +27,6 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Метод для создания"""
-
         # Простановка значения поля создатель по-умолчанию.
         # Текущий пользователь является создателем объявления
         # изменить или переопределить его через API нельзя.
@@ -48,6 +47,4 @@ class AdvertisementSerializer(serializers.ModelSerializer):
                 )
         except FileNotFoundError as error:
             print(error)
-        # TODO: добавьте требуемую валидацию
-
         return data
