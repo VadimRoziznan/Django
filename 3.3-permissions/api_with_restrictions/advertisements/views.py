@@ -27,18 +27,17 @@ class AdvertisementViewSet(ModelViewSet, ListAPIView, GenericAPIView):
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         creator = self.request.GET.get('creator')
         status = self.request.GET.get('status')
         response = Advertisement.objects.all().exclude(status='DRAFT') 
         if creator:
-            response = Advertisement.objects.filter(creator_id=creator)
+            if self.request.user.is_authenticated:
+                response = Advertisement.objects.filter(creator_id=creator)
+            else:
+                response = Advertisement.objects.filter(creator_id=creator).exclude(status='DRAFT')
         if status:
-            response = Advertisement.objects.filter(status=status)
-        # if self.request.user.is_authenticated:
-        #     queryset = queryset.filter(creator_id=self.request.user.id, status='DRAFT')  # исключаем чужие черновики
-        #     return queryset
-        # else:
-        #     queryset = queryset.exclude(status='DRAFT')  # исключаем все черновики
-        #     return queryset
+            if self.request.user.is_authenticated:
+                response = Advertisement.objects.filter(status=status)
+            else:
+                response = Advertisement.objects.filter(status=status).exclude(status='DRAFT')
         return response
