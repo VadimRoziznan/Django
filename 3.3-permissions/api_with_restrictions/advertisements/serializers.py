@@ -14,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name',)
 
 
+
 class AdvertisementSerializer(serializers.ModelSerializer):
     """Serializer для объявления."""
 
@@ -38,13 +39,12 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Метод для валидации. Вызывается при создании и обновлении."""
-        try:
-            user = self.context["request"].user
-            count_open_advertisement = len(Advertisement.objects.filter(creator_id=user, status='OPEN').values())
-            if count_open_advertisement >= 10:
-                raise ValidationError(
-                    'Превышен лимит открытых объявлений, закройте объявление и повторите попытку.  '
-                )
-        except FileNotFoundError as error:
-            print(error)
+
+        user = self.context["request"].user
+        count_open_advertisement = Advertisement.objects.filter(creator_id=user, status='OPEN').values().count()
+        if count_open_advertisement >= 10 and self.context["request"].method != 'PATCH':
+            raise ValidationError(
+                f'Превышен лимит открытых объявлений, вы создали {count_open_advertisement} объявлений, '
+                f'закройте объявление и повторите попытку.'
+            )
         return data

@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
@@ -13,27 +13,32 @@ from advertisements.filters import AdvertisementFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-class AdvertisementViewSet(ModelViewSet, ListAPIView):
+class AdvertisementViewSet(ModelViewSet, ListAPIView, GenericAPIView):
     """ViewSet для объявлений."""
     queryset = Advertisement.objects.all()
     serializer_class = AdvertisementSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrheadOnly]
+    permission_classes = [IsOwnerOrheadOnly]
     throttle_classes = [AnonRateThrottle]
     filter_backends = [
         DjangoFilterBackend, SearchFilter, OrderingFilter
     ]
     filterset_class = AdvertisementFilter
+    filterset_fields = ['creator', 'status']
     pagination_class = LimitOffsetPagination
 
-    def get_permissions(self):
-        """Получение прав для действий."""
-        if self.action in ["create", "update", "partial_update"]:
-            return [IsAuthenticated()]
-        return []
-
     def get_queryset(self):
+        queryset = super().get_queryset()
         creator = self.request.GET.get('creator')
-        response = Advertisement.objects.all()
+        status = self.request.GET.get('status')
+        response = Advertisement.objects.all().exclude(status='DRAFT') 
         if creator:
             response = Advertisement.objects.filter(creator_id=creator)
+        if status:
+            response = Advertisement.objects.filter(status=status)
+        # if self.request.user.is_authenticated:
+        #     queryset = queryset.filter(creator_id=self.request.user.id, status='DRAFT')  # исключаем чужие черновики
+        #     return queryset
+        # else:
+        #     queryset = queryset.exclude(status='DRAFT')  # исключаем все черновики
+        #     return queryset
         return response
