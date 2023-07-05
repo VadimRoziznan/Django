@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from advertisements.models import Advertisement
+from advertisements.models import Advertisement, Favorite
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -10,9 +10,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name',
-                  'last_name',)
-
+        fields = (
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+        )
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
@@ -24,7 +27,7 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = '__all__'
+        fields = "__all__"
 
     def create(self, validated_data):
         """Метод для создания"""
@@ -41,10 +44,22 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         """Метод для валидации. Вызывается при создании и обновлении."""
 
         user = self.context["request"].user
-        count_open_advertisement = Advertisement.objects.filter(creator_id=user, status='OPEN').values().count()
-        if count_open_advertisement >= 10 and self.context["request"].method != 'PATCH':
+        count_open_advertisement = (
+            Advertisement.objects.filter(creator_id=user, status="OPEN")
+            .values()
+            .count()
+        )
+        if count_open_advertisement >= 10 and self.context["request"].method != "PATCH":
             raise ValidationError(
-                f'Превышен лимит открытых объявлений, вы создали {count_open_advertisement} объявлений, '
-                f'закройте объявление и повторите попытку.'
+                f"Превышен лимит открытых объявлений, вы создали {count_open_advertisement} объявлений, "
+                f"закройте объявление и повторите попытку."
             )
         return data
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    advertisement = AdvertisementSerializer(read_only=True)
+
+    class Meta:
+        model = Favorite
+        fields = "__all__"

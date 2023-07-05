@@ -6,6 +6,7 @@
 GET {{baseUrl}}/advertisements/
 Content-Type: application/json
 
+
 ###
 
 # создание объявления
@@ -38,9 +39,9 @@ Content-Type: application/json
 ###
 
 # фильтрация по статусу
-GET {{baseUrl}}/advertisements/?status=DRAFT
+GET {{baseUrl}}/advertisements/?status=OPEN
 Content-Type: application/json
-Authorization: Token 45a3ba6c4d246cb3c8f650dcdffe4c8157927442
+Authorization: Token eafd203592a9fc874697379fef4937644461dae0
 
 ###
 
@@ -51,8 +52,24 @@ Content-Type: application/json
 ###
 
 # удаление продукта
-DELETE {{baseUrl}}/advertisements/56/
+DELETE {{baseUrl}}/advertisements/45/
+Content-Type: application/json
+Authorization: Token eafd203592a9fc874697379fef4937644461dae0
+
+###
+
+# добавление в избранное
+POST {{baseUrl}}/advertisements/53/add_to_favorite/
+Content-Type: application/json
+Authorization: Token eafd203592a9fc874697379fef4937644461dae0
+
+
+###
+
+# показать избранное
+GET {{baseUrl}}/advertisements/get_favorite/
 Content-Type: application/json
 Authorization: Token 45a3ba6c4d246cb3c8f650dcdffe4c8157927442
+
 
 ###

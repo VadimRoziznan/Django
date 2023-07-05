@@ -1,17 +1,20 @@
-from django_filters import rest_framework as filters, DateFromToRangeFilter
+from django_filters import rest_framework as filters
 
-from advertisements.models import Advertisement, AdvertisementStatusChoices
+from advertisements.models import Advertisement
 
 
 class AdvertisementFilter(filters.FilterSet):
     """Фильтры для объявлений."""
+
     created_at = filters.DateFromToRangeFilter()
-    status = filters.ChoiceFilter(choices=[
-        ("OPEN", "Открыто"),
-        ("CLOSED", "Закрыто"),
-        ("DRAFT", "Черновик"),
-    ])
+    status = filters.ChoiceFilter(
+        choices=[
+            ("OPEN", "Открыто"),
+            ("CLOSED", "Закрыто"),
+            ("DRAFT", "Черновик"),
+        ]
+    )
 
     class Meta:
         model = Advertisement
-        fields = ['created_at', 'status']
+        fields = ["created_at", "status"]
