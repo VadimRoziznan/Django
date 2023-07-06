@@ -2,41 +2,53 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
-# получение объявлений
+# получение списка всех курсов
 GET {{baseUrl}}/courses/
 Content-Type: application/json
 
 ###
 
-# создание объявления
-POST {{baseUrl}}/advertisements/
+# Добовление студента в Students
+POST {{baseUrl}}/students/
 Content-Type: application/json
-Authorization: Token 902ef055a9ac93f18327f1f9c45ab059f1a62c7d
 
 {
-  "title": "Шкаф IKEA",
-  "description": "Срочно"
+  "name": "Ira"
 }
 
 ###
 
-# попытка поменять объявление
-PATCH {{baseUrl}}/advertisements/1/
+# Добовление курса в Courses
+POST {{baseUrl}}/courses/
 Content-Type: application/json
-Authorization: Token 902ef055a9ac93f18327f1f9c45ab059f1a62c7d
 
 {
-  "status": "CLOSED"
+  "name": "C++",
+  "students": [
+    {
+      "id": 1,
+      "name": "Gora",
+      "birth_date": null
+    }
+  ]
 }
 
 ###
 
-# фильтрация по создателю
-GET {{baseUrl}}/advertisements/?creator=2
+# попытка поменять курс
+PATCH {{baseUrl}}/courses/2/
 Content-Type: application/json
+
+{
+  "name": "C++",
+  "students": [
+    {
+      "id": 1,
+      "name": "Gora",
+      "birth_date": null
+    }
+  ]
+}
 
 ###
 
-# фильтрация по дате
-GET {{baseUrl}}/advertisements/?created_at_before=2020-10-01
-Content-Type: application/json
