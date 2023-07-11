@@ -1,7 +1,4 @@
-
 from rest_framework import serializers
-
-
 from students.models import Course, Student
 
 
@@ -9,7 +6,10 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = '__all__'
+        fields = [
+            'name',
+            'birth_date'
+        ]
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -17,17 +17,20 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('name', 'students')
+        fields = [
+            'id',
+            'name',
+            'students'
+        ]
 
     def create(self, validated_data):
         students_data = validated_data.pop('students')
 
-        for student_data in students_data:
-            student_exists = Student.objects.filter(name=student_data['name']).exists()
-            if not student_exists:
-                student = Student.objects.create(**student_data)
-
         course = Course.objects.create(**validated_data)
-        course.students.set(students_data)
+
+        for student_data in students_data:
+            student, created = Student.objects.get_or_create(**student_data)
+            course.students.add(student)
+
         return course
 

@@ -8,6 +8,8 @@ from students.models import Student, Course
 
 from model_bakery import baker
 
+from students.serializers import StudentSerializer, CourseSerializer
+
 
 @pytest.fixture
 def client():
@@ -36,15 +38,18 @@ def student_factory():
 @pytest.mark.django_db
 def test_get_course(client, user, course_factory):
     #Arrange
-    course = course_factory()
+    courses = course_factory(_quantity=1)
 
     #Act
-    response = client.get('/api/v1/courses/')
+    response = client.get(f'/api/v1/courses/?id={courses[0].pk}')
+
 
     #Assert
     assert response.status_code == 200
     data = response.json()
-    assert data[0]['name'] == course.name
+    print(response)
+    assert data[0]['id'] == courses[0].pk
+    assert data[0]['name'] == courses[0].name
 
 
 @pytest.mark.django_db
@@ -60,21 +65,23 @@ def test_get_courses(client, user, course_factory):
     data = response.json()
     assert len(data) == len(courses)
     for i, m, in enumerate(data):
+        assert m['id'] == courses[i].id
         assert m['name'] == courses[i].name
 
 
 @pytest.mark.django_db
 def test_check_id(client, user, course_factory):
     # Arrange
-    courses = course_factory(_quantity=10)
+    courses = course_factory(_quantity=12)
 
     # Act
-    response = client.get(f'/api/v1/courses/?id={courses[2].id}')
+    response = client.get(f'/api/v1/courses/?id={courses[0].pk}')
 
     # Assert
     data = response.json()
     assert response.status_code == 200
-    assert data[0]['id'] == courses[2].id
+    assert len(data) == 1
+    assert data[0]['id'] == courses[0].pk
 
 
 @pytest.mark.django_db
@@ -88,25 +95,41 @@ def test_check_name(client, user, course_factory):
     # Assert
     data = response.json()
     assert response.status_code == 200
+    assert len(data) == 1
     assert data[0]['name'] == courses[5].name
 
 
 @pytest.mark.django_db
 def test_post_course(client, user):
-    # Arrange
-    count = Course.objects.count()
 
-    # Act
-    response = client.post(
-        '/api/v1/courses/',
-        data={
-            'name': 'C',
-            'student_id': user.id
-        })
+    student_data = {
+        'name': 'John',
+        'birth_date': '1990-01-01'
+    }
+    student_serializer = StudentSerializer(data=student_data)
+    assert student_serializer.is_valid(), student_serializer.errors
+    student = student_serializer.save()
 
-    # Assert
-    assert response.status_code == 201
-    assert Course.objects.count() == count + 1
+    course_data = {
+        'name': 'Test Course',
+        'students': [
+            {
+                'name': 'Jane',
+                'birth_date': '1990-01-01'
+            }
+        ]
+    }
+    course_serializer = CourseSerializer(data=course_data)
+    assert course_serializer.is_valid(), course_serializer.errors
+    course = course_serializer.save()
+
+    assert course.name == 'Test Course'
+    assert course.students.count() == 1
+    assert course.students.first().name == 'Jane'
+
+    course.delete()
+
+    student.delete()
 
 
 @pytest.mark.django_db
@@ -115,10 +138,10 @@ def test_patch_course(client, user, course_factory):
     course = course_factory()
 
     # Act
-    json_data = {
+    course_data = {
         "name": "C"
     }
-    response = client.patch(f"/api/v1/courses/{course.id}/", data=json_data)
+    response = client.patch(f"/api/v1/courses/{course.pk}/", data=course_data)
 
     # Assert
     assert response.status_code == 200
@@ -132,13 +155,11 @@ def test_delete_course(client, user, course_factory):
     course = course_factory()
 
     # Act
-    response = client.delete(f"/api/v1/courses/{course.id}/")
+    response = client.delete(f"/api/v1/courses/{course.pk}/")
 
     # Assert
-    assert response.status_code == 204  # Проверка успешного кода состояния
+    assert response.status_code == 204
 
     # Убедитесь, что курс был удален из базы данных
     with pytest.raises(Course.DoesNotExist):
         course.refresh_from_db()
-
-
