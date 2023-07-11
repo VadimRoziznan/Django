@@ -31,7 +31,7 @@ class Advertisement(models.Model):
 class Favorite(models.Model):
     """Избранное"""
 
-    User = models.ForeignKey(
+    user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )

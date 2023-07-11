@@ -45,11 +45,9 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
         user = self.context["request"].user
         count_open_advertisement = (
-            Advertisement.objects.filter(creator_id=user, status="OPEN")
-            .values()
-            .count()
+            Advertisement.objects.filter(creator=user, status="OPEN").count()
         )
-        if count_open_advertisement >= 10 and self.context["request"].method != "PATCH":
+        if count_open_advertisement >= 10 and data.get('status') != 'CLOSED':
             raise ValidationError(
                 f"Превышен лимит открытых объявлений, вы создали {count_open_advertisement} объявлений, "
                 f"закройте объявление и повторите попытку."

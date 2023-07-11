@@ -52,16 +52,16 @@ Content-Type: application/json
 ###
 
 # удаление продукта
-DELETE {{baseUrl}}/advertisements/45/
+DELETE {{baseUrl}}/advertisements/2/
 Content-Type: application/json
 Authorization: Token eafd203592a9fc874697379fef4937644461dae0
 
 ###
 
 # добавление в избранное
-POST {{baseUrl}}/advertisements/53/add_to_favorite/
+POST {{baseUrl}}/advertisements/47/add-to-favorite/
 Content-Type: application/json
-Authorization: Token eafd203592a9fc874697379fef4937644461dae0
+Authorization: Token 45a3ba6c4d246cb3c8f650dcdffe4c8157927442
 
 
 ###
